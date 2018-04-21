@@ -17,20 +17,65 @@ import (
 )
 
 var (
+	oidExtNameConstraints    = asn1.ObjectIdentifier{2, 5, 29, 30}
+	oidExtSubjectKeyId       = asn1.ObjectIdentifier{2, 5, 29, 14}
 	oidExtKeyUsage           = asn1.ObjectIdentifier{2, 5, 29, 15}
-	oidExtBasicConstraints   = asn1.ObjectIdentifier{2, 5, 29, 19}
 	oidExtSubjectAltName     = asn1.ObjectIdentifier{2, 5, 29, 17}
 	oidExtIssuerAltName      = asn1.ObjectIdentifier{2, 5, 29, 18}
-	oidExtNameConstraints    = asn1.ObjectIdentifier{2, 5, 29, 30}
+	oidExtBasicConstraints   = asn1.ObjectIdentifier{2, 5, 29, 19}
 	oidCRLDistributionPoints = asn1.ObjectIdentifier{2, 5, 29, 31}
-	oidExtAuthKeyId          = asn1.ObjectIdentifier{2, 5, 29, 35}
-	oidExtSubjectKeyId       = asn1.ObjectIdentifier{2, 5, 29, 14}
-	oidExtExtendedKeyUsage   = asn1.ObjectIdentifier{2, 5, 29, 37}
 	oidExtCertificatePolicy  = asn1.ObjectIdentifier{2, 5, 29, 32}
+	oidExtAuthKeyId          = asn1.ObjectIdentifier{2, 5, 29, 35}
+	oidExtExtendedKeyUsage   = asn1.ObjectIdentifier{2, 5, 29, 37}
 
-	oidExtAuthorityInfoAccess            = oidExtensionAuthorityInfoAccess
+	oidSubjectDirectoryAttributes  = asn1.ObjectIdentifier{2, 5, 29, 9}  //TODO: implement - http://www.alvestrand.no/objectid/2.5.29.9.html
+	oidPolicyMappings              = asn1.ObjectIdentifier{2, 5, 29, 33} // TODO: implement
+	oidPolicyConstraintsDeprecated = asn1.ObjectIdentifier{2, 5, 29, 34} // TODO: implement
+	oidPolicyConstraints           = asn1.ObjectIdentifier{2, 5, 29, 36} // TODO: implement
+	oidFreshestCRL                 = asn1.ObjectIdentifier{2, 5, 29, 46} // TODO: implement
+	oidInhibitAnyPolicy             = asn1.ObjectIdentifier{2, 5, 29, 54} // TODO: implement
+	oidPrivateKeyUsagePeriod       = asn1.ObjectIdentifier{2, 5, 29, 16} //TODO: implement - http://www.alvestrand.no/objectid/2.5.16.html
+	oidCRLReasonCode               = asn1.ObjectIdentifier{2, 5, 29, 21} //TODO: implement - CRL extension http://www.alvestrand.no/objectid/2.5.29.21.html
+	oidCRLHoldInstructionCode      = asn1.ObjectIdentifier{2, 5, 29, 23} //TODO: implement - CRL extension for "certificateHold" reason code http://www.alvestrand.no/objectid/2.5.29.23.html
+	oidCRLInvalidityDate           = asn1.ObjectIdentifier{2, 5, 29, 24} // TODO: implement - CRL extension
+	oidCRLDeltaCRLIndicator        = asn1.ObjectIdentifier{2, 5, 29, 27} // TODO: implement - CRL extension
+	oidCRLIssuingDistributionPoint = asn1.ObjectIdentifier{2, 5, 29, 28} // TODO: implement - CRL extension
+	oidCRLCertificateIssuer        = asn1.ObjectIdentifier{2, 5, 29, 29} // TODO: implement - CRL extension
+
+	oidAuthorityAttributeIdentifier = asn1.ObjectIdentifier{2, 5, 29, 38} // Unimplemented
+	oidRoleSpecCertIdentifier       = asn1.ObjectIdentifier{2, 5, 29, 39} // Unimplemented
+	oidCRLStreamIdentifier          = asn1.ObjectIdentifier{2, 5, 29, 40} // Unimplemented
+	oidBasicAttConstraints          = asn1.ObjectIdentifier{2, 5, 29, 41} // Unimplemented
+	oidDelegatedNameConstraints     = asn1.ObjectIdentifier{2, 5, 29, 42} // Unimplemented
+	oidTimeSpecification            = asn1.ObjectIdentifier{2, 5, 29, 43} // Unimplemented
+	oidCRLScope                     = asn1.ObjectIdentifier{2, 5, 29, 44} // Unimplemented
+	oidStatusReferrals              = asn1.ObjectIdentifier{2, 5, 29, 45} // Unimplemented
+	oidOrderedList                  = asn1.ObjectIdentifier{2, 5, 29, 47} // Unimplemented
+	oidAttributeDescriptor          = asn1.ObjectIdentifier{2, 5, 29, 48} // Unimplemented
+	oidUserNotice                   = asn1.ObjectIdentifier{2, 5, 29, 49} // Unimplemented
+	oidSOAIdentifier                = asn1.ObjectIdentifier{2, 5, 29, 50} // Unimplemented
+	oidBaseUpdateTime               = asn1.ObjectIdentifier{2, 5, 29, 51} // Unimplemented
+	oidAcceptableCertPolicies       = asn1.ObjectIdentifier{2, 5, 29, 52} // Unimplemented
+	oidDeltaInfo                    = asn1.ObjectIdentifier{2, 5, 29, 53} // Unimplemented
+	oidTargetInformation            = asn1.ObjectIdentifier{2, 5, 29, 55} // Unimplemented
+	oidNoRevAvail                   = asn1.ObjectIdentifier{2, 5, 29, 56} // Unimplemented
+	oidAcceptablePrivilegePolicies  = asn1.ObjectIdentifier{2, 5, 29, 57} // Unimplemented
+	oidToBeRevoked                  = asn1.ObjectIdentifier{2, 5, 29, 58} // Unimplemented
+	oidRevokedGroups                = asn1.ObjectIdentifier{2, 5, 29, 59} // Unimplemented
+	oidExpiredCertsOnCRL            = asn1.ObjectIdentifier{2, 5, 29, 60} // Unimplemented
+	oidIndirectIssuer               = asn1.ObjectIdentifier{2, 5, 29, 61} // Unimplemented
+	oidNoAssertion                  = asn1.ObjectIdentifier{2, 5, 29, 62} // Unimplemented
+	oidAAissuingDistributionPoint   = asn1.ObjectIdentifier{2, 5, 29, 63} // Unimplemented
+	oidIssuedOnBehaIFOF             = asn1.ObjectIdentifier{2, 5, 29, 64} // Unimplemented
+	oidSingleUse                    = asn1.ObjectIdentifier{2, 5, 29, 65} // Unimplemented
+	oidGroupAC                      = asn1.ObjectIdentifier{2, 5, 29, 66} // Unimplemented
+	oidAllowedAttAss                = asn1.ObjectIdentifier{2, 5, 29, 67} // Unimplemented
+	oidAttributeMappings            = asn1.ObjectIdentifier{2, 5, 29, 68} // Unimplemented
+	oidHolderNameConstraints        = asn1.ObjectIdentifier{2, 5, 29, 69} // Unimplemented
+
+	oidExtAuthorityInfoAccess            = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 1, 1}
+	oidExtSignedCertificateTimestampList = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 2}
 	oidExtensionCTPrecertificatePoison   = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 3}
-	oidExtSignedCertificateTimestampList = oidExtensionSignedCertificateTimestampList
 )
 
 type encodedUnknownExtensions []encodedUnknownExtension
