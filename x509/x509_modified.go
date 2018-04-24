@@ -321,6 +321,7 @@ type Certificate struct {
 	PolicyIdentifiers []asn1.ObjectIdentifier
 	ValidationLevel   CertValidationLevel
 	PolicyMappings    CertificatePolicyMappings
+	PolicyConstraints  CertificatePolicyConstraints
 
 	// Fingerprints
 	FingerprintMD5    CertificateFingerprint
@@ -574,6 +575,14 @@ type generalSubtree struct {
 }
 
 type policyMapping []asn1.ObjectIdentifier
+
+type skipCerts int
+
+// RFC 5280, 4.2.1.3
+type policyConstraint struct {
+	requireExplicitPolicy []skipCerts `asn1:"optional,tag:0"`
+	inhibitPolicyMapping  []skipCerts `asn1:"optional,tag:1"`
+}
 
 func parsePublicKey(algo PublicKeyAlgorithm, keyData *publicKeyInfo) (interface{}, error) {
 	asn1Data := keyData.PublicKey.RightAlign()
@@ -864,6 +873,17 @@ func parseCertificate(in *certificate) (*Certificate, error) {
 				if err == nil {
 					for _, mapping := range policyMappings {
 						out.PolicyMappings = append(out.PolicyMappings, mapping)
+					}
+					continue
+				}
+			case 36:
+				// RFC 5280, 4.2.1.11
+				var policyConstraints []policyConstraint
+				_, err := asn1.Unmarshal(e.Value, &policyConstraints)
+
+				if err == nil {
+					for _, mapping := range policyConstraints {
+						out.PolicyConstraints = append(out.PolicyConstraints, mapping)
 					}
 					continue
 				}

@@ -92,6 +92,7 @@ type CertificateExtensions struct {
 	ExtendedKeyUsage               *ExtendedKeyUsageExtension       `json:"extended_key_usage,omitempty"`
 	CertificatePolicies            *CertificatePoliciesData         `json:"certificate_policies,omitempty"`
 	CertificatePolicyMappings      CertificatePolicyMappings        `json:"certificate_policy__mappings,omitempty"`
+	CertificatePolicyConstraints   CertificatePolicyConstraints     `json:"certificate_policy__constraints,omitempty`
 	AuthorityInfoAccess            *AuthorityInfoAccess             `json:"authority_info_access,omitempty"`
 	IsPrecert                      IsPrecert                        `json:"ct_poison,omitempty"`
 	SignedCertificateTimestampList []*ct.SignedCertificateTimestamp `json:"signed_certificate_timestamps,omitempty"`
@@ -140,6 +141,7 @@ type CertificatePoliciesData struct {
 }
 
 type CertificatePolicyMappings []policyMapping
+type CertificatePolicyConstraints [] policyConstraint
 
 func (cp *CertificatePoliciesData) MarshalJSON() ([]byte, error) {
 	policies := CertificatePolicies{}
@@ -796,6 +798,9 @@ func (c *Certificate) jsonifyExtensions() (*CertificateExtensions, UnknownCertif
 
 		} else if e.Id.Equal(oidPolicyMappings) {
 			exts.CertificatePolicyMappings = c.PolicyMappings
+
+		} else if e.Id.Equal(oidPolicyConstraints) {
+			exts.CertificatePolicyConstraints = c.PolicyConstraints
 
 		} else if e.Id.Equal(oidExtAuthorityInfoAccess) {
 			exts.AuthorityInfoAccess = new(AuthorityInfoAccess)
