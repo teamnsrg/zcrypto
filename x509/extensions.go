@@ -29,11 +29,11 @@ var (
 	oidExtExtendedKeyUsage   = asn1.ObjectIdentifier{2, 5, 29, 37}
 
 	oidSubjectDirectoryAttributes  = asn1.ObjectIdentifier{2, 5, 29, 9}  //TODO: implement - http://www.alvestrand.no/objectid/2.5.29.9.html
-	oidPolicyMappings              = asn1.ObjectIdentifier{2, 5, 29, 33} // TODO: implement
+	oidPolicyMappings              = asn1.ObjectIdentifier{2, 5, 29, 33} 
 	oidPolicyConstraintsDeprecated = asn1.ObjectIdentifier{2, 5, 29, 34} // TODO: implement
 	oidPolicyConstraints           = asn1.ObjectIdentifier{2, 5, 29, 36} // TODO: implement
 	oidFreshestCRL                 = asn1.ObjectIdentifier{2, 5, 29, 46} // TODO: implement
-	oidInhibitAnyPolicy             = asn1.ObjectIdentifier{2, 5, 29, 54} // TODO: implement
+	oidInhibitAnyPolicy            = asn1.ObjectIdentifier{2, 5, 29, 54} // TODO: implement
 	oidPrivateKeyUsagePeriod       = asn1.ObjectIdentifier{2, 5, 29, 16} //TODO: implement - http://www.alvestrand.no/objectid/2.5.16.html
 	oidCRLReasonCode               = asn1.ObjectIdentifier{2, 5, 29, 21} //TODO: implement - CRL extension http://www.alvestrand.no/objectid/2.5.29.21.html
 	oidCRLHoldInstructionCode      = asn1.ObjectIdentifier{2, 5, 29, 23} //TODO: implement - CRL extension for "certificateHold" reason code http://www.alvestrand.no/objectid/2.5.29.23.html
@@ -91,6 +91,7 @@ type CertificateExtensions struct {
 	SubjectKeyID                   SubjAuthKeyId                    `json:"subject_key_id,omitempty"`
 	ExtendedKeyUsage               *ExtendedKeyUsageExtension       `json:"extended_key_usage,omitempty"`
 	CertificatePolicies            *CertificatePoliciesData         `json:"certificate_policies,omitempty"`
+	CertificatePolicyMappings      CertificatePolicyMappings        `json:"certificate_policy__mappings,omitempty"`
 	AuthorityInfoAccess            *AuthorityInfoAccess             `json:"authority_info_access,omitempty"`
 	IsPrecert                      IsPrecert                        `json:"ct_poison,omitempty"`
 	SignedCertificateTimestampList []*ct.SignedCertificateTimestamp `json:"signed_certificate_timestamps,omitempty"`
@@ -137,6 +138,8 @@ type CertificatePoliciesData struct {
 	NoticeRefOrganization [][]string
 	NoticeRefNumbers      [][]NoticeNumber
 }
+
+type CertificatePolicyMappings []policyMapping
 
 func (cp *CertificatePoliciesData) MarshalJSON() ([]byte, error) {
 	policies := CertificatePolicies{}
@@ -790,6 +793,9 @@ func (c *Certificate) jsonifyExtensions() (*CertificateExtensions, UnknownCertif
 			exts.CertificatePolicies.ExplicitTexts = c.ParsedExplicitTexts
 			exts.CertificatePolicies.QualifierId = c.QualifierId
 			exts.CertificatePolicies.CPSUri = c.CPSuri
+
+		} else if e.Id.Equal(oidPolicyMappings) {
+			exts.CertificatePolicyMappings = c.PolicyMappings
 
 		} else if e.Id.Equal(oidExtAuthorityInfoAccess) {
 			exts.AuthorityInfoAccess = new(AuthorityInfoAccess)

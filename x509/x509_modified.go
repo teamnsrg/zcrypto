@@ -320,6 +320,7 @@ type Certificate struct {
 
 	PolicyIdentifiers []asn1.ObjectIdentifier
 	ValidationLevel   CertValidationLevel
+	PolicyMappings    CertificatePolicyMappings
 
 	// Fingerprints
 	FingerprintMD5    CertificateFingerprint
@@ -451,7 +452,7 @@ func CheckSignatureFromKey(publicKey interface{}, algo SignatureAlgorithm, signe
 		hashType = crypto.SHA384
 	case SHA512WithRSA, SHA512WithRSAPSS, ECDSAWithSHA512:
 		hashType = crypto.SHA512
-	//case MD2WithRSA, MD5WithRSA:
+		//case MD2WithRSA, MD5WithRSA:
 	case MD2WithRSA:
 		return InsecureAlgorithmError(algo)
 	default:
@@ -571,6 +572,8 @@ type generalSubtree struct {
 	Min   int           `asn1:"tag:0,default:0,optional"`
 	Max   int           `asn1:"tag:1,optional"`
 }
+
+type policyMapping []asn1.ObjectIdentifier
 
 func parsePublicKey(algo PublicKeyAlgorithm, keyData *publicKeyInfo) (interface{}, error) {
 	asn1Data := keyData.PublicKey.RightAlign()
@@ -853,6 +856,17 @@ func parseCertificate(in *certificate) (*Certificate, error) {
 
 		if len(e.Id) == 4 && e.Id[0] == 2 && e.Id[1] == 5 && e.Id[2] == 29 {
 			switch e.Id[3] {
+			case 33:
+				// RFC 5280, 4.2.1.5
+				var policyMappings []policyMapping
+				_, err := asn1.Unmarshal(e.Value, &policyMappings)
+
+				if err == nil {
+					for _, mapping := range policyMappings {
+						out.PolicyMappings = append(out.PolicyMappings, mapping)
+					}
+					continue
+				}
 			case 15:
 				// RFC 5280, 4.2.1.3
 				var usageBits asn1.BitString
