@@ -770,6 +770,7 @@ func parseGeneralNames(value []byte) (otherNames []pkix.OtherName, dnsNames, ema
 func parseCertificate(in *certificate) (*Certificate, error) {
 	out := new(Certificate)
 	out.Raw = in.Raw
+
 	out.RawTBSCertificate = in.TBSCertificate.Raw
 	out.RawSubjectPublicKeyInfo = in.TBSCertificate.PublicKey.Raw
 	out.RawSubject = in.TBSCertificate.Subject.FullBytes
@@ -781,7 +782,6 @@ func parseCertificate(in *certificate) (*Certificate, error) {
 	out.FingerprintSHA256 = SHA256Fingerprint(in.Raw)
 	out.SPKIFingerprint = SHA256Fingerprint(in.TBSCertificate.PublicKey.Raw)
 	out.TBSCertificateFingerprint = SHA256Fingerprint(in.TBSCertificate.Raw)
-
 	tbs := in.TBSCertificate
 	originalExtensions := in.TBSCertificate.Extensions
 

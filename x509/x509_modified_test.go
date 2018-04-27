@@ -10,6 +10,7 @@ import (
 	"bufio"
 	"encoding/base64"
 	"log"
+	"encoding/asn1"
 )
 
 
@@ -48,10 +49,13 @@ func Test(t *testing.T) {
 			}
 		}
 		var rawCertBytes string = line[start_pos:end_pos]
-		//fmt.Print(rawCertBytes)
-		fmt.Print(rawCertBytes)
-		fmt.Print("\n\n\n\n")
 		s, _ := base64.StdEncoding.DecodeString(rawCertBytes)
+		var tempC certificate
+		_, err := asn1.Unmarshal(s, &tempC)
+		if err != nil {
+			//fmt.Print(err)
+			continue
+		}
 		c, err := ParseCertificate(s)
 		if err != nil {
 			log.Fatal(err)
@@ -62,7 +66,9 @@ func Test(t *testing.T) {
 		}
 
 		lineCount += 1
-		if lineCount > 100 {
+		//fmt.Print(lineCount)
+		if lineCount > 2000 {
+			fmt.Print(lineCount)
 			return
 		}
 	}
