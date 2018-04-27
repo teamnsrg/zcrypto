@@ -403,7 +403,7 @@ type CRLDistributionPoints []string
 
 type FreshestCRL struct {
 	fullName	[] string
-	CRLIssuer	[] string
+	CRLIssuer	[] GeneralNames
 }
 type SubjAuthKeyId []byte
 

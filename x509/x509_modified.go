@@ -929,32 +929,11 @@ func parseCertificate(in *certificate) (*Certificate, error) {
 						out.FreshestCRL.fullName = append(out.FreshestCRL.fullName, "")
 					}
 					if len(dp.CRLIssuer.Bytes) != 0 {
-						var n asn1.RawValue
-						_, err = asn1.Unmarshal(dp.CRLIssuer.Bytes, &n)
+						var name GeneralNames
+						name.OtherNames, name.DNSNames, name.EmailAddresses, name.URIs, name.DirectoryNames, name.EDIPartyNames, name.IPAddresses, name.RegisteredIDs, err = parseGeneralNames(dp.CRLIssuer.Bytes)
 						if err != nil {
 							return nil, err
 						}
-						if n.Tag == 0 {
-							var oName pkix.OtherName
-							_, err = asn1.UnmarshalWithParams(dp.CRLIssuer.Bytes, &oName, "tag:0")
-							if err != nil {
-								return nil, err
-							}
-							var tempStr string
-							for _, ele := range oName.TypeID {
-								tempStr += string(ele) + "."
-							}
-							if len(tempStr) > 0 {
-								tempStr = tempStr[:len(tempStr)-1]
-							}
-							out.FreshestCRL.CRLIssuer = append(out.FreshestCRL.CRLIssuer, tempStr)
-						} else if n.Tag == 1 || n.Tag == 2 || n.Tag == 6{
-							out.FreshestCRL.CRLIssuer = append(out.FreshestCRL.CRLIssuer, string(n.Bytes))
-						} else {
-							out.FreshestCRL.CRLIssuer = append(out.FreshestCRL.CRLIssuer, "")
-						}
-					} else {
-						out.FreshestCRL.CRLIssuer = append(out.FreshestCRL.CRLIssuer, "")
 					}
 				}
 				continue
