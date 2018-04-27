@@ -944,7 +944,10 @@ func parseCertificate(in *certificate) (*Certificate, error) {
 							for _, ele := range oName.TypeID {
 								tempStr += string(ele) + "."
 							}
-							out.FreshestCRL.CRLIssuer = append(out.FreshestCRL.CRLIssuer, tempStr[:len(tempStr) - 1])
+							if len(tempStr) > 0 {
+								tempStr = tempStr[:len(tempStr)-1]
+							}
+							out.FreshestCRL.CRLIssuer = append(out.FreshestCRL.CRLIssuer, tempStr)
 						} else if n.Tag == 1 || n.Tag == 2 || n.Tag == 6{
 							out.FreshestCRL.CRLIssuer = append(out.FreshestCRL.CRLIssuer, string(n.Bytes))
 						} else {
