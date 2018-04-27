@@ -934,7 +934,18 @@ func parseCertificate(in *certificate) (*Certificate, error) {
 						if err != nil {
 							return nil, err
 						}
-						if n.Tag == 6 {
+						if n.Tag == 0 {
+							var oName pkix.OtherName
+							_, err = asn1.UnmarshalWithParams(dp.CRLIssuer.Bytes, &oName, "tag:0")
+							if err != nil {
+								return nil, err
+							}
+							var tempStr string
+							for _, ele := range oName.TypeID {
+								tempStr += string(ele) + "."
+							}
+							out.FreshestCRL.CRLIssuer = append(out.FreshestCRL.CRLIssuer, tempStr[:len(tempStr) - 1])
+						} else if n.Tag == 1 || n.Tag == 2 || n.Tag == 6{
 							out.FreshestCRL.CRLIssuer = append(out.FreshestCRL.CRLIssuer, string(n.Bytes))
 						} else {
 							out.FreshestCRL.CRLIssuer = append(out.FreshestCRL.CRLIssuer, "")
