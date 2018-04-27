@@ -317,11 +317,12 @@ type Certificate struct {
 
 	// CRL Distribution Points
 	CRLDistributionPoints []string
-
+	CRLDistributionPoinstMoreInfo [] string
 	PolicyIdentifiers []asn1.ObjectIdentifier
 	ValidationLevel   CertValidationLevel
 	PolicyMappings    CertificatePolicyMappings
 	PolicyConstraints  CertificatePolicyConstraints
+	FreshestCRL	   		FreshestCRL
 
 	// Fingerprints
 	FingerprintMD5    CertificateFingerprint
@@ -696,7 +697,7 @@ func parseGeneralNames(value []byte) (otherNames []pkix.OtherName, dnsNames, ema
 	//      directoryName                   [4]     Name,
 	//      ediPartyName                    [5]     EDIPartyName,
 	//      uniformResourceIdentifier       [6]     IA5String,
-	//      iPAddress                       [7]     OCTET STRING,
+	//      iPAddress c                      [7]     OCTET STRING,
 	//      registeredID                    [8]     OBJECT IDENTIFIER }
 	var seq asn1.RawValue
 	if _, err = asn1.Unmarshal(value, &seq); err != nil {
@@ -902,6 +903,47 @@ func parseCertificate(in *certificate) (*Certificate, error) {
 					out.KeyUsage = KeyUsage(usage)
 					continue
 				}
+			case 46:
+				// RFC 5280 4.2.1.15
+				var freshestCRL []distributionPoint
+				_, err := asn1.Unmarshal(e.Value, &freshestCRL)
+				if err != nil {
+					return nil, err
+				}
+
+				for _, dp := range freshestCRL {
+					// Per RFC 5280, 4.2.1.13, one of distributionPoint or cRLIssuer may be empty.
+					if len(dp.DistributionPoint.FullName.Bytes) != 0 {
+						var n asn1.RawValue
+						_, err = asn1.Unmarshal(dp.DistributionPoint.FullName.Bytes, &n)
+						if err != nil {
+							return nil, err
+						}
+
+						if n.Tag == 6 {
+							out.FreshestCRL.fullName = append(out.FreshestCRL.fullName, string(n.Bytes))
+						} else {
+							out.FreshestCRL.fullName = append(out.FreshestCRL.fullName, "")
+						}
+					} else {
+						out.FreshestCRL.fullName = append(out.FreshestCRL.fullName, "")
+					}
+					if len(dp.CRLIssuer.Bytes) != 0 {
+						var n asn1.RawValue
+						_, err = asn1.Unmarshal(dp.CRLIssuer.Bytes, &n)
+						if err != nil {
+							return nil, err
+						}
+						if n.Tag == 6 {
+							out.FreshestCRL.CRLIssuer = append(out.FreshestCRL.CRLIssuer, string(n.Bytes))
+						} else {
+							out.FreshestCRL.CRLIssuer = append(out.FreshestCRL.CRLIssuer, "")
+						}
+					} else {
+						out.FreshestCRL.CRLIssuer = append(out.FreshestCRL.CRLIssuer, "")
+					}
+				}
+				continue
 			case 19:
 				// RFC 5280, 4.2.1.9
 				var constraints basicConstraints

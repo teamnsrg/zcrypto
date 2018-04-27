@@ -31,7 +31,7 @@ var (
 	oidSubjectDirectoryAttributes  = asn1.ObjectIdentifier{2, 5, 29, 9}  //TODO: implement - http://www.alvestrand.no/objectid/2.5.29.9.html
 	oidPolicyMappings              = asn1.ObjectIdentifier{2, 5, 29, 33} 
 	oidPolicyConstraintsDeprecated = asn1.ObjectIdentifier{2, 5, 29, 34} // TODO: implement
-	oidPolicyConstraints           = asn1.ObjectIdentifier{2, 5, 29, 36} // TODO: implement
+	oidPolicyConstraints           = asn1.ObjectIdentifier{2, 5, 29, 36}
 	oidFreshestCRL                 = asn1.ObjectIdentifier{2, 5, 29, 46} // TODO: implement
 	oidInhibitAnyPolicy            = asn1.ObjectIdentifier{2, 5, 29, 54} // TODO: implement
 	oidPrivateKeyUsagePeriod       = asn1.ObjectIdentifier{2, 5, 29, 16} //TODO: implement - http://www.alvestrand.no/objectid/2.5.16.html
@@ -93,6 +93,7 @@ type CertificateExtensions struct {
 	CertificatePolicies            *CertificatePoliciesData         `json:"certificate_policies,omitempty"`
 	CertificatePolicyMappings      CertificatePolicyMappings        `json:"certificate_policy__mappings,omitempty"`
 	CertificatePolicyConstraints   CertificatePolicyConstraints     `json:"certificate_policy__constraints,omitempty`
+	FreshestCRL					   FreshestCRL						`json:"certificate_freshest_crls,omitempty`
 	AuthorityInfoAccess            *AuthorityInfoAccess             `json:"authority_info_access,omitempty"`
 	IsPrecert                      IsPrecert                        `json:"ct_poison,omitempty"`
 	SignedCertificateTimestampList []*ct.SignedCertificateTimestamp `json:"signed_certificate_timestamps,omitempty"`
@@ -400,6 +401,10 @@ func (nc NameConstraints) MarshalJSON() ([]byte, error) {
 
 type CRLDistributionPoints []string
 
+type FreshestCRL struct {
+	fullName	[] string
+	CRLIssuer	[] string
+}
 type SubjAuthKeyId []byte
 
 func (kid SubjAuthKeyId) MarshalJSON() ([]byte, error) {
@@ -781,6 +786,8 @@ func (c *Certificate) jsonifyExtensions() (*CertificateExtensions, UnknownCertif
 			exts.NameConstraints.ExcludedRegisteredIDs = c.ExcludedRegisteredIDs
 		} else if e.Id.Equal(oidCRLDistributionPoints) {
 			exts.CRLDistributionPoints = c.CRLDistributionPoints
+		} else if e.Id.Equal(oidFreshestCRL) {
+			exts.FreshestCRL = c.FreshestCRL
 		} else if e.Id.Equal(oidExtAuthKeyId) {
 			exts.AuthKeyID = c.AuthorityKeyId
 		} else if e.Id.Equal(oidExtExtendedKeyUsage) {
