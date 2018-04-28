@@ -11,16 +11,17 @@ import (
 	"encoding/base64"
 	"log"
 	"encoding/asn1"
+	"io"
 )
 
 
 func Test(t *testing.T) {
 	fileHandle, _ := os.Open("FirstTwoKLogForTesting.txt")
 	defer fileHandle.Close()
-	fileScanner := bufio.NewScanner(fileHandle)
+	r := bufio.NewReader(fileHandle)
 	var lineCount int = 0
-	for fileScanner.Scan() {
-		var line = fileScanner.Text()
+	for line, _, err := r.ReadLine(); err != io.EOF; {
+		lineCount += 1
 		if len(line) == 0{
 			continue
 		}
@@ -44,11 +45,11 @@ func Test(t *testing.T) {
 				end_pos = 0;
 				}
 			}
-			if (line[i] == ',') {
+			if line[i] == ',' {
 				comma_count += 1;
 			}
 		}
-		var rawCertBytes string = line[start_pos:end_pos]
+		var rawCertBytes string = string(line[start_pos:end_pos])
 		s, _ := base64.StdEncoding.DecodeString(rawCertBytes)
 		var tempC certificate
 		_, err := asn1.Unmarshal(s, &tempC)
@@ -65,10 +66,8 @@ func Test(t *testing.T) {
 			fmt.Print(c.FreshestCRL)
 		}
 
-		lineCount += 1
 		//fmt.Print(lineCount)
 		if lineCount > 2000 {
-			fmt.Print(lineCount)
 			return
 		}
 	}
