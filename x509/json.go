@@ -16,8 +16,8 @@ import (
 	"time"
 
 	"github.com/asaskevich/govalidator"
-	jsonKeys "github.com/zmap/zcrypto/json"
-	"github.com/zmap/zcrypto/x509/pkix"
+	jsonKeys "github.com/teamnsrg/zcrypto/json"
+	"github.com/teamnsrg/zcrypto/x509/pkix"
 )
 
 var kMinTime, kMaxTime time.Time

@@ -66,7 +66,7 @@ func Test(t *testing.T) {
 			fmt.Print(c.FreshestCRL)
 		}
 
-		//fmt.Print(lineCount)
+		// fmt.Print(lineCount)
 		if lineCount > 2000 {
 			return
 		}

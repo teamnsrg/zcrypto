@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/zmap/zcrypto/x509/ct"
-	"github.com/zmap/zcrypto/x509/pkix"
+	"github.com/teamnsrg/zcrypto/x509/ct"
+	"github.com/teamnsrg/zcrypto/x509/pkix"
 )
 
 var (
@@ -31,7 +31,7 @@ var (
 	oidSubjectDirectoryAttributes  = asn1.ObjectIdentifier{2, 5, 29, 9}  //TODO: implement - http://www.alvestrand.no/objectid/2.5.29.9.html
 	oidPolicyMappings              = asn1.ObjectIdentifier{2, 5, 29, 33} 
 	oidPolicyConstraintsDeprecated = asn1.ObjectIdentifier{2, 5, 29, 34} // TODO: implement
-	oidPolicyConstraints           = asn1.ObjectIdentifier{2, 5, 29, 36}
+	oidPolicyConstraints           = asn1.ObjectIdentifier{2, 5, 29, 36} // TODO: implement
 	oidFreshestCRL                 = asn1.ObjectIdentifier{2, 5, 29, 46} // TODO: implement
 	oidInhibitAnyPolicy            = asn1.ObjectIdentifier{2, 5, 29, 54} // TODO: implement
 	oidPrivateKeyUsagePeriod       = asn1.ObjectIdentifier{2, 5, 29, 16} //TODO: implement - http://www.alvestrand.no/objectid/2.5.16.html
