@@ -17,7 +17,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zmap/zcrypto/x509"
+	"github.com/teamnsrg/zcrypto/x509"
 )
 
 // A Conn represents a secured connection.
@@ -49,12 +49,12 @@ type Conn struct {
 	clientProtocolFallback bool
 
 	// input/output
-	in, out  halfConn     // in.Mutex < out.Mutex
-	rawInput *block       // raw input, right off the wire
-	input    *block       // application data waiting to be read
-	hand     bytes.Buffer // handshake data waiting to be read
-	buffering bool        // whether records are buffered in sendBuf
-	sendBuf   []byte      // a buffer of records waiting to be sent
+	in, out   halfConn     // in.Mutex < out.Mutex
+	rawInput  *block       // raw input, right off the wire
+	input     *block       // application data waiting to be read
+	hand      bytes.Buffer // handshake data waiting to be read
+	buffering bool         // whether records are buffered in sendBuf
+	sendBuf   []byte       // a buffer of records waiting to be sent
 
 	tmp [16]byte
 

@@ -29,7 +29,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/zmap/zcrypto/x509/pkix"
+	"github.com/teamnsrg/zcrypto/x509/pkix"
 )
 
 // pkixPublicKey reflects a PKIX public key structure. See SubjectPublicKeyInfo

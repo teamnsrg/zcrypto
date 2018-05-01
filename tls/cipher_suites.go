@@ -16,8 +16,8 @@ import (
 	"crypto/sha512"
 	"hash"
 
+	"github.com/teamnsrg/zcrypto/x509"
 	"github.com/zmap/rc2"
-	"github.com/zmap/zcrypto/x509"
 )
 
 // a keyAgreement implements the client and server side of a TLS key agreement

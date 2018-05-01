@@ -27,9 +27,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/teamnsrg/zcrypto/x509/ct"
+	"github.com/teamnsrg/zcrypto/x509/pkix"
 	"github.com/weppos/publicsuffix-go/publicsuffix"
-	"github.com/zmap/zcrypto/x509/ct"
-	"github.com/zmap/zcrypto/x509/pkix"
 )
 
 // ParsedDomainName is a structure holding a parsed domain name (CommonName or DNS SAN) and a parsing error.
