@@ -10,7 +10,6 @@ import (
 	"bufio"
 	"encoding/base64"
 	"log"
-	"encoding/asn1"
 	"io"
 )
 
@@ -21,10 +20,10 @@ func Test(t *testing.T) {
 	r := bufio.NewReader(fileHandle)
 	var lineCount int = 0
 	for line, _, err := r.ReadLine(); err != io.EOF; {
-		lineCount += 1
 		if len(line) == 0{
 			continue
 		}
+		lineCount += 1
 		var start_pos, end_pos, comma_count int = 0, 0, 0
 		//var precert bool = true
 		for i,_ := range line {
@@ -51,27 +50,28 @@ func Test(t *testing.T) {
 		}
 		var rawCertBytes string = string(line[start_pos:end_pos])
 		s, _ := base64.StdEncoding.DecodeString(rawCertBytes)
-		var tempC certificate
-		_, err := asn1.Unmarshal(s, &tempC)
-		if err != nil {
-			//fmt.Print(err)
-			continue
-		}
 		c, err := ParseCertificate(s)
 		if err != nil {
+			fmt.Print(err)
 			log.Fatal(err)
 		} else {
-			fmt.Print(c.PolicyMappings)
-			fmt.Print(c.PolicyConstraints)
-			fmt.Print(c.FreshestCRL)
+			if (len(c.PolicyMappings) > 0) {
+				fmt.Print(c.PolicyMappings)
+			}
+			if (len(c.PolicyConstraints) > 0) {
+				fmt.Print(c.PolicyConstraints)
+			}
+			if (len(c.FreshestCRL.fullName) > 0 || len(c.FreshestCRL.CRLIssuer) > 0) {
+				fmt.Print(c.FreshestCRL)
+			}
 		}
 
 		// fmt.Print(lineCount)
 		if lineCount > 2000 {
+			fmt.Print(lineCount)
 			return
 		}
 	}
-
 	return
 }
 
