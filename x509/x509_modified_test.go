@@ -15,14 +15,11 @@ import (
 
 
 func Test(t *testing.T) {
-	fileHandle, _ := os.Open("FirstTwoKLogForTesting.txt")
+	fileHandle, _ := os.Open("/data3/ct_data/ct-log.txt")
 	defer fileHandle.Close()
 	r := bufio.NewReader(fileHandle)
 	var lineCount int = 0
 	for line, _, err := r.ReadLine(); err != io.EOF; {
-		if len(line) == 0{
-			continue
-		}
 		lineCount += 1
 		var start_pos, end_pos, comma_count int = 0, 0, 0
 		//var precert bool = true
